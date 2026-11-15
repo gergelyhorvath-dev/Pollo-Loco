@@ -4,8 +4,12 @@ class Character extends MovableObject {
     speed = 10; // 10 Pixel pro Bewegungsschritt (60x/Sekunde).
     world;
 
-    
-    // Für eine richtige Geh-Animation fehlen noch zusätzliche Einzelbilder.
+    // NEU: Merkt sich, ob die Sprungtaste schon gedrueckt war.
+    // Dadurch springt Pepe nur einmal pro Tastendruck.
+    jumpKeyWasPressed = false;
+
+    // Dein img-Ordner enthaelt aktuell dieses echte Pepe-Bild.
+    // Fuer eine richtige Geh-Animation fehlen noch weitere Einzelbilder.
     IMAGES_WALKING = [
         'img/I-1.png'
     ];
@@ -14,25 +18,38 @@ class Character extends MovableObject {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
+        this.applyGravity(); // NEU: Die Schwerkraft fuer Pepe einschalten.
         this.animate();
     }
 
     animate() {
-        // Die Bewegung läuft unabhängig vom Wechsel der Animationsbilder.
+        // Bewegung und Tastaturabfrage laufen 60-mal pro Sekunde.
         setInterval(() => {
             if (!this.world) return;
 
-            if (this.world.keyboard.RIGHT) {
-                this.x += this.speed;
-                this.otherDirection = false; // Rechts: Bild normal anzeigen.
+            const keyboard = this.world.keyboard;
+            const maxX = this.world.canvas.width - this.width;
+
+            if (keyboard.RIGHT && !keyboard.LEFT) {
+                // NEU: Pepe kann nicht mehr rechts aus dem Canvas hinauslaufen.
+                this.x = Math.min(this.x + this.speed, maxX);
+                this.otherDirection = false;
             }
-            if (this.world.keyboard.LEFT) {
-                this.x -= this.speed;
-                this.otherDirection = true;  // Links: Bild spiegeln.
+            if (keyboard.LEFT && !keyboard.RIGHT) {
+                // NEU: Pepe kann nicht mehr links aus dem Canvas hinauslaufen.
+                this.x = Math.max(this.x - this.speed, 0);
+                this.otherDirection = true;
             }
+
+            // NEU: Leertaste oder Pfeil nach oben lassen Pepe springen.
+            const jumpKeyPressed = keyboard.SPACE || keyboard.UP;
+            if (jumpKeyPressed && !this.jumpKeyWasPressed && !this.isAboveGround()) {
+                this.jump();
+            }
+            this.jumpKeyWasPressed = jumpKeyPressed;
         }, 1000 / 60);
 
-        // Nur beim Laufen Bilder wechseln (50 Millisekunden = 20x/Sekunde).
+        // Bilderwechsel nur beim Laufen. Noch gibt es nur ein echtes Bild.
         setInterval(() => {
             if (!this.world) return;
             if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
@@ -44,7 +61,11 @@ class Character extends MovableObject {
         }, 50);
     }
 
+    // NEU: Der Sprung startet mit einer positiven Geschwindigkeit nach oben.
+    // Danach verringert applyGravity() diese Geschwindigkeit automatisch.
     jump() {
-        // Springen wird in einem späteren Video ergänzt.
+        if (!this.isAboveGround()) {
+            this.speedY = 12;
+        }
     }
 }

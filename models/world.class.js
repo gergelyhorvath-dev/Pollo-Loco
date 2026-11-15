@@ -44,7 +44,7 @@ class World {
     }
 
     addToMap(mo) {
-        
+        // Keine Ersatzzeichnungen: Nur tatsächlich geladene PNG-Bilder anzeigen.
         if (!mo.img || !mo.img.complete || mo.img.naturalWidth === 0) return;
 
         if (mo.otherDirection) {

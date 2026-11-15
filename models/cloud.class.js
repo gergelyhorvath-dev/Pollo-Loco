@@ -6,7 +6,7 @@ class Cloud extends MovableObject {
 
     constructor() {
         super();
-        
+        // Ordnername aus deinen Screenshots: 4_clouds (nicht 4.nubes).
         this.loadImage('img/layers/4_clouds/1.png');
         this.x = Math.random() * 500;
         this.animate();

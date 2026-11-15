@@ -3,8 +3,8 @@ class Chicken extends MovableObject {
     height = 55;
     width = 70;
 
-    
-    // Weitere Gehbilder sind noch nicht vorhanden.
+    // Das ist die echte Huhn-Datei aus deinem img-Ordner.
+    // Weitere Gehbilder sind in den Screenshots nicht vorhanden.
     IMAGES_WALKING = ['img/1_w.png'];
 
     constructor() {
