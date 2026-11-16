@@ -1,4 +1,3 @@
-// Merkt sich, welche Tasten gerade gedrückt werden.
 class Keyboard {
     LEFT = false;
     RIGHT = false;

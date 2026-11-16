@@ -7,14 +7,7 @@ class MovableObject {
     imageCache = {};
     currentImage = 0;
     speed = 0.15;
-
-    // false: normale Blickrichtung; true: horizontal spiegeln.
     otherDirection = false;
-
-    // NEU: Werte fuer das Springen und die Schwerkraft.
-    speedY = 0;          // Vertikale Geschwindigkeit (positiv bedeutet aufwaerts).
-    acceleration = 0.7; // Pro Bild wird die Aufwaertsgeschwindigkeit kleiner.
-    groundY = 180;      // Ausgangsposition von Pepe, wenn er auf dem Boden steht.
 
     loadImage(path) {
         this.img = new Image();
@@ -22,11 +15,10 @@ class MovableObject {
         this.img.onerror = () => console.error('Bild konnte nicht geladen werden:', path);
     }
 
-    loadImages(arr) {
-        arr.forEach((path) => {
+    loadImages(paths) {
+        paths.forEach((path) => {
             const img = new Image();
             img.src = path;
-            img.onerror = () => console.error('Animationsbild fehlt:', path);
             this.imageCache[path] = img;
         });
     }
@@ -36,30 +28,20 @@ class MovableObject {
     }
 
     moveLeft() {
-        setInterval(() => {
-            this.x -= this.speed;
-        }, 1000 / 60);
+        this.x -= this.speed;
     }
 
-    // NEU: Solange das Objekt in der Luft ist, wirkt die Schwerkraft.
-    // Wir rufen diese Funktion vorerst nur bei Pepe auf.
-    applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;             // Position nach oben/unten bewegen.
-                this.speedY -= this.acceleration; // Schwerkraft zieht nach unten.
+    playAnimation(images) {
+        const availableImages = images.filter((path) => {
+            const image = this.imageCache[path];
+            return image && image.complete && image.naturalWidth > 0;
+        });
 
-                // Nicht durch den Boden fallen: Pepe landet genau auf seiner Startposition.
-                if (this.y >= this.groundY) {
-                    this.y = this.groundY;
-                    this.speedY = 0;
-                }
-            }
-        }, 1000 / 60);
-    }
+        if (availableImages.length === 0) return false;
 
-    // NEU: true bedeutet, dass Pepe noch oberhalb seiner Bodenposition ist.
-    isAboveGround() {
-        return this.y < this.groundY;
+        const index = this.currentImage % availableImages.length;
+        this.img = this.imageCache[availableImages[index]];
+        this.currentImage++;
+        return true;
     }
 }

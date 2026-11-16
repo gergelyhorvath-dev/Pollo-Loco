@@ -2,27 +2,31 @@ class Chicken extends MovableObject {
     y = 360;
     height = 55;
     width = 70;
-
-    // Das ist die echte Huhn-Datei aus deinem img-Ordner.
-    // Weitere Gehbilder sind in den Screenshots nicht vorhanden.
-    IMAGES_WALKING = ['img/1_w.png'];
+    IMAGES_WALKING = [
+        'img/ch-walk/1_w.png',
+        'img/ch-walk/2_w.png',
+        'img/ch-walk/3_w.png'
+    ];
 
     constructor() {
         super();
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
-        this.x = 200 + Math.random() * 500;
-        this.speed = 0.15 + Math.random() * 0.25;
+        this.x = 300 + Math.random() * 900;
+        this.speed = 0.25 + Math.random() * 0.35;
         this.animate();
     }
 
     animate() {
-        this.moveLeft();
         setInterval(() => {
-            const i = this.currentImage % this.IMAGES_WALKING.length;
-            const path = this.IMAGES_WALKING[i];
-            this.img = this.imageCache[path];
-            this.currentImage++;
+            this.moveLeft();
+            if (this.x < -this.width) {
+                this.x = 2300 + Math.random() * 400;
+            }
+        }, 1000 / 60);
+
+        setInterval(() => {
+            this.playAnimation(this.IMAGES_WALKING);
         }, 200);
     }
 }

@@ -5,33 +5,30 @@ let keyboard = new Keyboard();
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
-    console.log('My Character is', world.character);
 }
 
-// keydown erkennt auch die Pfeiltasten (keypress dagegen nicht zuverlässig).
-window.addEventListener('keydown', (e) => {
-    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
-        e.preventDefault(); // Die Seite soll beim Drücken nicht scrollen.
+window.addEventListener('keydown', (event) => {
+    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Space'].includes(event.code)) {
+        event.preventDefault();
     }
-    if (e.code === 'ArrowRight') keyboard.RIGHT = true;
-    if (e.code === 'ArrowLeft') keyboard.LEFT = true;
-    if (e.code === 'ArrowUp') keyboard.UP = true;
-    if (e.code === 'ArrowDown') keyboard.DOWN = true;
-    if (e.code === 'Space') keyboard.SPACE = true;
+    if (event.code === 'ArrowRight') keyboard.RIGHT = true;
+    if (event.code === 'ArrowLeft') keyboard.LEFT = true;
+    if (event.code === 'ArrowUp') keyboard.UP = true;
+    if (event.code === 'ArrowDown') keyboard.DOWN = true;
+    if (event.code === 'Space') keyboard.SPACE = true;
 });
 
-window.addEventListener('keyup', (e) => {
-    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Space'].includes(e.code)) {
-        e.preventDefault();
+window.addEventListener('keyup', (event) => {
+    if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Space'].includes(event.code)) {
+        event.preventDefault();
     }
-    if (e.code === 'ArrowRight') keyboard.RIGHT = false;
-    if (e.code === 'ArrowLeft') keyboard.LEFT = false;
-    if (e.code === 'ArrowUp') keyboard.UP = false;
-    if (e.code === 'ArrowDown') keyboard.DOWN = false;
-    if (e.code === 'Space') keyboard.SPACE = false;
+    if (event.code === 'ArrowRight') keyboard.RIGHT = false;
+    if (event.code === 'ArrowLeft') keyboard.LEFT = false;
+    if (event.code === 'ArrowUp') keyboard.UP = false;
+    if (event.code === 'ArrowDown') keyboard.DOWN = false;
+    if (event.code === 'Space') keyboard.SPACE = false;
 });
 
-// Falls du den Browser-Tab wechselst, bleiben Tasten nicht versehentlich gedrückt.
 window.addEventListener('blur', () => {
     keyboard.RIGHT = false;
     keyboard.LEFT = false;

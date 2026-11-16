@@ -1,71 +1,81 @@
 class Character extends MovableObject {
-    height = 250;
+    x = 120;
     y = 180;
-    speed = 10; // 10 Pixel pro Bewegungsschritt (60x/Sekunde).
+    width = 110;
+    height = 250;
+    speed = 5;
+    speedY = 0;
+    acceleration = 1.1;
+    groundY = 180;
     world;
+    jumpingKeyWasDown = false;
+    standingImage;
 
-    // NEU: Merkt sich, ob die Sprungtaste schon gedrueckt war.
-    // Dadurch springt Pepe nur einmal pro Tastendruck.
-    jumpKeyWasPressed = false;
-
-    // Dein img-Ordner enthaelt aktuell dieses echte Pepe-Bild.
-    // Fuer eine richtige Geh-Animation fehlen noch weitere Einzelbilder.
     IMAGES_WALKING = [
-        'img/I-1.png'
+        'img/walk/W-21.png',
+        'img/walk/W-22.png',
+        'img/walk/W-23.png',
+        'img/walk/W-24.png',
+        'img/walk/W-25.png',
+        'img/walk/W-26.png'
     ];
 
     constructor() {
         super();
-        this.loadImage(this.IMAGES_WALKING[0]);
+        this.loadImage('img/I-1.png');
+        this.standingImage = this.img;
         this.loadImages(this.IMAGES_WALKING);
-        this.applyGravity(); // NEU: Die Schwerkraft fuer Pepe einschalten.
         this.animate();
     }
 
     animate() {
-        // Bewegung und Tastaturabfrage laufen 60-mal pro Sekunde.
+        setInterval(() => this.update(), 1000 / 60);
+
         setInterval(() => {
             if (!this.world) return;
-
-            const keyboard = this.world.keyboard;
-            const maxX = this.world.canvas.width - this.width;
-
-            if (keyboard.RIGHT && !keyboard.LEFT) {
-                // NEU: Pepe kann nicht mehr rechts aus dem Canvas hinauslaufen.
-                this.x = Math.min(this.x + this.speed, maxX);
-                this.otherDirection = false;
+            const moving = this.world.keyboard.LEFT !== this.world.keyboard.RIGHT;
+            if (moving && this.y === this.groundY) {
+                if (!this.playAnimation(this.IMAGES_WALKING)) {
+                    this.img = this.standingImage;
+                }
+            } else {
+                this.img = this.standingImage;
+                this.currentImage = 0;
             }
-            if (keyboard.LEFT && !keyboard.RIGHT) {
-                // NEU: Pepe kann nicht mehr links aus dem Canvas hinauslaufen.
-                this.x = Math.max(this.x - this.speed, 0);
-                this.otherDirection = true;
-            }
-
-            // NEU: Leertaste oder Pfeil nach oben lassen Pepe springen.
-            const jumpKeyPressed = keyboard.SPACE || keyboard.UP;
-            if (jumpKeyPressed && !this.jumpKeyWasPressed && !this.isAboveGround()) {
-                this.jump();
-            }
-            this.jumpKeyWasPressed = jumpKeyPressed;
-        }, 1000 / 60);
-
-        // Bilderwechsel nur beim Laufen. Noch gibt es nur ein echtes Bild.
-        setInterval(() => {
-            if (!this.world) return;
-            if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                const i = this.currentImage % this.IMAGES_WALKING.length;
-                const path = this.IMAGES_WALKING[i];
-                this.img = this.imageCache[path];
-                this.currentImage++;
-            }
-        }, 50);
+        }, 90);
     }
 
-    // NEU: Der Sprung startet mit einer positiven Geschwindigkeit nach oben.
-    // Danach verringert applyGravity() diese Geschwindigkeit automatisch.
-    jump() {
-        if (!this.isAboveGround()) {
-            this.speedY = 12;
+    update() {
+        if (!this.world) return;
+        const keys = this.world.keyboard;
+
+        if (keys.RIGHT && !keys.LEFT && this.x < this.world.levelEndX - this.width) {
+            this.moveRight();
+            this.otherDirection = false;
         }
+
+        if (keys.LEFT && !keys.RIGHT && this.x > 0) {
+            this.moveLeft();
+            this.otherDirection = true;
+        }
+
+        const jumpPressed = keys.SPACE || keys.UP;
+        if (jumpPressed && !this.jumpingKeyWasDown && this.y >= this.groundY) {
+            this.jump();
+        }
+        this.jumpingKeyWasDown = jumpPressed;
+
+        if (this.y < this.groundY || this.speedY < 0) {
+            this.y += this.speedY;
+            this.speedY += this.acceleration;
+            if (this.y >= this.groundY) {
+                this.y = this.groundY;
+                this.speedY = 0;
+            }
+        }
+    }
+
+    jump() {
+        this.speedY = -20;
     }
 }
