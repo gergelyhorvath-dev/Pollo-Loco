@@ -1,14 +1,18 @@
 class Character extends MovableObject {
-    x = 120;
+    x = 100;
     y = 180;
     width = 110;
     height = 250;
-    speed = 5;
+    speed = 4.7;
     speedY = 0;
-    acceleration = 1.1;
+    gravity = 1.08;
     groundY = 180;
+    health = 100;
+    invulnerable = 0;
+    previousBottom = 0;
     world;
-    jumpingKeyWasDown = false;
+    jumpWasPressed = false;
+    throwWasPressed = false;
     standingImage;
 
     IMAGES_WALKING = [
@@ -25,57 +29,85 @@ class Character extends MovableObject {
         this.loadImage('img/I-1.png');
         this.standingImage = this.img;
         this.loadImages(this.IMAGES_WALKING);
-        this.animate();
     }
 
-    animate() {
-        setInterval(() => this.update(), 1000 / 60);
-
-        setInterval(() => {
-            if (!this.world) return;
-            const moving = this.world.keyboard.LEFT !== this.world.keyboard.RIGHT;
-            if (moving && this.y === this.groundY) {
-                if (!this.playAnimation(this.IMAGES_WALKING)) {
-                    this.img = this.standingImage;
-                }
-            } else {
-                this.img = this.standingImage;
-                this.currentImage = 0;
-            }
-        }, 90);
-    }
-
-    update() {
-        if (!this.world) return;
+    update(dt) {
+        if (!this.world || this.health <= 0) return;
         const keys = this.world.keyboard;
+        this.previousBottom = this.getHitbox().y + this.getHitbox().height;
+        this.invulnerable = Math.max(0, this.invulnerable - dt);
+        this.updateMovement(keys, dt);
+        this.updateJump(keys, dt);
+        this.updateThrow(keys);
+        this.updateAnimation(keys, dt);
+    }
 
-        if (keys.RIGHT && !keys.LEFT && this.x < this.world.levelEndX - this.width) {
-            this.moveRight();
+    updateMovement(keys, dt) {
+        if (keys.RIGHT && !keys.LEFT) {
+            this.x = Math.min(this.world.levelEndX - this.width, this.x + this.speed * dt);
             this.otherDirection = false;
         }
-
-        if (keys.LEFT && !keys.RIGHT && this.x > 0) {
-            this.moveLeft();
+        if (keys.LEFT && !keys.RIGHT) {
+            this.x = Math.max(0, this.x - this.speed * dt);
             this.otherDirection = true;
         }
+    }
 
-        const jumpPressed = keys.SPACE || keys.UP;
-        if (jumpPressed && !this.jumpingKeyWasDown && this.y >= this.groundY) {
-            this.jump();
-        }
-        this.jumpingKeyWasDown = jumpPressed;
-
-        if (this.y < this.groundY || this.speedY < 0) {
-            this.y += this.speedY;
-            this.speedY += this.acceleration;
-            if (this.y >= this.groundY) {
+    updateJump(keys, dt) {
+        const pressed = keys.SPACE || keys.UP;
+        if (pressed && !this.jumpWasPressed && this.isOnGround()) this.jump();
+        this.jumpWasPressed = pressed;
+        if (!this.isOnGround() || this.speedY < 0) {
+            this.y += this.speedY * dt;
+            this.speedY += this.gravity * dt;
+            if (this.y > this.groundY) {
                 this.y = this.groundY;
                 this.speedY = 0;
             }
         }
     }
 
+    updateThrow(keys) {
+        if (keys.THROW && !this.throwWasPressed) this.world.throwBottle();
+        this.throwWasPressed = keys.THROW;
+    }
+
+    updateAnimation(keys, dt) {
+        const moving = keys.RIGHT !== keys.LEFT;
+        if (moving && this.isOnGround()) {
+            this.playAnimation(this.IMAGES_WALKING, dt, 6);
+        } else {
+            this.img = this.standingImage;
+            this.currentImage = 0;
+            this.animationClock = 0;
+        }
+    }
+
+    isOnGround() {
+        return this.y >= this.groundY && this.speedY >= 0;
+    }
+
     jump() {
-        this.speedY = -20;
+        this.speedY = -19.5;
+        this.world.sound.play('jump');
+    }
+
+    bounce() {
+        this.speedY = -13;
+        this.y = Math.min(this.y, this.groundY - 4);
+        this.world.sound.play('stomp');
+    }
+
+    hurt(amount) {
+        if (this.invulnerable > 0 || this.health <= 0) return false;
+        this.health = Math.max(0, this.health - amount);
+        this.invulnerable = 75;
+        this.speedY = -7;
+        this.world.sound.play('hurt');
+        return true;
+    }
+
+    getHitbox() {
+        return { x: this.x + 28, y: this.y + 65, width: 54, height: 164 };
     }
 }

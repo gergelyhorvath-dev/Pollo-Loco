@@ -1,22 +1,321 @@
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: dark;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+    min-height: 100%;
+    background: #172621;
+}
+
 body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 24px 12px;
-  background: #f5f5f5;
-  font-family: Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    background: #1c3028;
+    color: #f8f0d9;
 }
-h1 { margin: 0 0 16px; }
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+button:focus-visible {
+    outline: 3px solid #ffdb66;
+    outline-offset: 3px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.page {
+    width: min(95vw, 950px);
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 13px;
+    max-width: 930px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 900;
+    letter-spacing: .15em;
+    font-size: 15px;
+}
+
+.sound-button {
+    color: #f7e5bc;
+    border: 1px solid #6e7d61;
+    border-radius: 8px;
+    background: #20392e;
+    padding: 9px 14px;
+}
+
+.sound-button:hover {
+    background: #31533f;
+}
+
+.game-shell {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 720 / 480;
+    overflow: hidden;
+    border-radius: 15px;
+    border: 5px solid #8a743b;
+    box-shadow: 0 10px 22px #0005;
+    background: linear-gradient(#a1d6ef, #cde2c1);
+}
+
 canvas {
-  display: block;
-  width: 720px;
-  max-width: 100%;
-  height: auto;
-  background: black;
-  border-radius: 8px;
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: fill;
 }
-p { text-align: center; color: #444; }
-.subtitle { font-size: 12px; color: #777; }
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: #15291fdc;
+}
+
+.panel {
+    width: min(95%, 445px);
+    text-align: center;
+    padding: clamp(12px, 3vw, 30px);
+    border: 1px solid #c3a55d8e;
+    background: #15281fe6;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px #0007;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(32px, 6vw, 64px);
+    line-height: .88;
+    letter-spacing: -.04em;
+    text-shadow: 3px 4px 0 #081713;
+}
+
+h1 span {
+    color: #f5ba47;
+}
+
+h2 {
+    font-size: clamp(25px, 5vw, 44px);
+    color: #f5ba47;
+    margin: 4px 0 14px;
+}
+
+.intro {
+    font-size: clamp(12px, 1.8vw, 15px);
+    line-height: 1.45;
+    color: #f5ecd5;
+    margin: 16px auto;
+    max-width: 370px;
+}
+
+.primary-button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 18px;
+    color: #1b2717;
+    background: #f2be4c;
+    font-weight: 900;
+    letter-spacing: .07em;
+    box-shadow: 0 3px 0 #b36a22;
+}
+
+.primary-button:hover {
+    filter: brightness(1.09);
+}
+
+.primary-button:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #b36a22;
+}
+
+.text-button {
+    margin-top: 12px;
+    color: #f4e2b6;
+    background: transparent;
+    border: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 7px;
+}
+
+.help-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 9px;
+    color: #eee1ba;
+    font-size: 11px;
+}
+
+.help-panel span {
+    background: #203c2c;
+    padding: 9px 4px;
+    border-radius: 7px;
+}
+
+.end-score {
+    color: #ffd473;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.controls-hint {
+    margin: 16px auto 7px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.controls-hint span {
+    color: #e2b65a;
+    padding: 0 12px;
+}
+
+.project-note {
+    margin: 0;
+    text-align: center;
+    font-size: 12px;
+    color: #a9c1b2;
+}
+
+.touch-controls {
+    position: absolute;
+    z-index: 2;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: none;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.touch-group {
+    display: flex;
+    gap: 9px;
+}
+
+.touch-button {
+    width: 60px;
+    height: 55px;
+    border-radius: 13px;
+    border: 2px solid #fee3a8;
+    background: #182f27ac;
+    color: #fff3c0;
+    font-size: 27px;
+    font-weight: 900;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.touch-button.action {
+    background: #7d4317c4;
+}
+
+.touch-button.pressed {
+    background: #ffc857;
+    color: #1a281e;
+}
+
+.orientation-warning {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .page {
+        padding-top: 10px;
+    }
+    .brand {
+        font-size: 12px;
+    }
+    .sound-button {
+        font-size: 12px;
+        padding: 7px;
+    }
+    .controls-hint {
+        font-size: 11px;
+    }
+}
+
+@media (pointer: coarse), (max-width: 800px) {
+    .touch-controls {
+        display: flex;
+    }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+    .page {
+        padding: 5px 0;
+        width: min(90vw, 760px);
+    }
+    .topbar {
+        margin-bottom: 4px;
+    }
+    .game-shell {
+        max-height: 78vh;
+        margin: auto;
+        width: auto;
+    }
+    .controls-hint, .project-note {
+        display: none;
+    }
+    .panel {
+        padding: 9px 16px;
+    }
+    .intro {
+        margin: 8px auto;
+    }
+    .touch-button {
+        height: 45px;
+        width: 50px;
+    }
+}
+
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 850px) {
+    .orientation-warning {
+        display: flex;
+        position: fixed;
+        z-index: 20;
+        inset: 0;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 15px;
+        background: #12261e;
+        font-size: 58px;
+    }
+    .orientation-warning strong {
+        font-size: 25px;
+    }
+    .orientation-warning span {
+        font-size: 16px;
+    }
+}

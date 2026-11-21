@@ -1,47 +1,54 @@
 class MovableObject {
-    x = 120;
-    y = 280;
-    img;
-    height = 150;
+    x = 0;
+    y = 0;
     width = 100;
+    height = 100;
+    speed = 0;
+    img;
     imageCache = {};
     currentImage = 0;
-    speed = 0.15;
+    animationClock = 0;
     otherDirection = false;
 
     loadImage(path) {
         this.img = new Image();
         this.img.src = path;
-        this.img.onerror = () => console.error('Bild konnte nicht geladen werden:', path);
     }
 
     loadImages(paths) {
         paths.forEach((path) => {
-            const img = new Image();
-            img.src = path;
-            this.imageCache[path] = img;
+            const image = new Image();
+            image.src = path;
+            this.imageCache[path] = image;
         });
     }
 
-    moveRight() {
-        this.x += this.speed;
-    }
-
-    moveLeft() {
-        this.x -= this.speed;
-    }
-
-    playAnimation(images) {
-        const availableImages = images.filter((path) => {
-            const image = this.imageCache[path];
-            return image && image.complete && image.naturalWidth > 0;
-        });
-
-        if (availableImages.length === 0) return false;
-
-        const index = this.currentImage % availableImages.length;
-        this.img = this.imageCache[availableImages[index]];
+    playAnimation(images, elapsed = 1, interval = 7) {
+        this.animationClock += elapsed;
+        if (this.animationClock < interval) return;
+        this.animationClock = 0;
+        const path = images[this.currentImage % images.length];
+        const next = this.imageCache[path];
+        if (next && next.complete && next.naturalWidth > 0) this.img = next;
         this.currentImage++;
-        return true;
+    }
+
+    moveRight(amount = 1) {
+        this.x += this.speed * amount;
+    }
+
+    moveLeft(amount = 1) {
+        this.x -= this.speed * amount;
+    }
+
+    getHitbox() {
+        return { x: this.x, y: this.y, width: this.width, height: this.height };
+    }
+
+    isColliding(other) {
+        const a = this.getHitbox();
+        const b = other.getHitbox();
+        return a.x < b.x + b.width && a.x + a.width > b.x &&
+            a.y < b.y + b.height && a.y + a.height > b.y;
     }
 }

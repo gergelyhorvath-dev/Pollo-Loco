@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>El Pollo Loco – Zwischenstand</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172621">
+  <title>El Pollo Loco – Abenteuer</title>
   <link rel="stylesheet" href="style.css">
   <script src="models/movable-object.class.js"></script>
   <script src="models/character.class.js"></script>
@@ -11,14 +12,56 @@
   <script src="models/cloud.class.js"></script>
   <script src="models/background-object.class.js"></script>
   <script src="models/coin.class.js"></script>
+  <script src="models/bottle.class.js"></script>
+  <script src="models/endboss.class.js"></script>
+  <script src="models/sound.class.js"></script>
   <script src="models/world.class.js"></script>
   <script src="models/keyboard.class.js"></script>
   <script src="js/game.js"></script>
 </head>
 <body onload="init()">
-  <h1>El Pollo Loco</h1>
-  <canvas id="canvas" width="720" height="480"></canvas>
-  <p>← → Bewegen &nbsp;·&nbsp; Leertaste oder ↑ Springen</p>
-  <p class="subtitle">Projekt-Zwischenstand · 16.11.2026 · Münzen sammeln</p>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand"><span>EL POLLO LOCO</span></div>
+      <button class="sound-button" id="sound-button" type="button">🔇 Ton aus</button>
+    </header>
+    <section class="game-shell" aria-label="El Pollo Loco Spiel">
+      <canvas id="canvas" width="720" height="480" aria-label="Spielfeld"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="panel" id="menu-screen">
+          <h1>EL POLLO<br><span>LOCO</span></h1>
+          <p class="intro">Sammle Goldmünzen und Flaschen. Besiege die Hühner und stelle dich am Ende dem großen Boss!</p>
+          <button class="primary-button" id="start-button" type="button">▶ MISSION STARTEN</button>
+          <button class="text-button" id="help-button" type="button">Steuerung anzeigen</button>
+          <div class="help-panel hidden" id="help-panel">
+            <span>← / → Bewegen</span>
+            <span>↑ / Leertaste Springen</span>
+            <span>D Flasche werfen</span>
+            <span>Auf Hühner springen, um sie zu besiegen</span>
+          </div>
+        </div>
+        <div class="panel hidden" id="end-screen">
+          <h2 id="end-title">SPIELENDE</h2>
+          <p class="intro" id="end-text"></p>
+          <p class="end-score" id="end-score"></p>
+          <button class="primary-button" id="restart-button" type="button">↻ NOCHMAL SPIELEN</button>
+          <button class="text-button" id="home-button" type="button">Zurück zum Startbildschirm</button>
+        </div>
+      </div>
+      <div class="touch-controls" id="touch-controls">
+        <div class="touch-group">
+          <button class="touch-button" type="button" data-key="LEFT" aria-label="Links">◀</button>
+          <button class="touch-button" type="button" data-key="RIGHT" aria-label="Rechts">▶</button>
+        </div>
+        <div class="touch-group">
+          <button class="touch-button action" type="button" data-key="THROW" aria-label="Flasche werfen">🍾</button>
+          <button class="touch-button action" type="button" data-key="SPACE" aria-label="Springen">↑</button>
+        </div>
+      </div>
+    </section>
+    <p class="controls-hint">← → Bewegen <span>·</span> Leertaste / ↑ Springen <span>·</span> D Flasche werfen</p>
+    <p class="project-note">El Pollo Loco · Zwischenstand 21.11.2026</p>
+  </main>
+  <div class="orientation-warning">↻<strong>Bitte Gerät drehen</strong><span>Spiele im Querformat.</span></div>
 </body>
 </html>
